@@ -1,283 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Barangay Update Notifier</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barangay Resident Management</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #e9f3ff;
+    margin: 0;
+    padding: 0;
+  }
 
-  <style>
-    body {
-      font-family: "Inter", sans-serif;
-      background: #f5f6fa;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1100px;
-      margin: auto;
-    }
-    header {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 20px;
-      margin-bottom: 15px;
-    }
-    header h1 {
-      font-size: 26px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #333;
-    }
-    header p {
-      color: #777;
-      font-size: 14px;
-    }
-    /* Tabs */
-    .tabs {
-      display: flex;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 12px 0;
-      font-weight: 600;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: 0.2s;
-    }
-    .tab.active {
-      border-bottom: 3px solid #2563eb;
-      color: #2563eb;
-      background: #eef2ff;
-    }
-    .tab-content {
-      display: none;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      padding: 20px;
-    }
-    .tab-content.active { display: block; }
+  header {
+    background-color: #0078d7;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
 
-    h2 {
-      font-size: 20px;
-      color: #222;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 15px;
-    }
+  .tabs {
+    display: flex;
+    background-color: #005fa3;
+  }
 
-    input, select, textarea, button {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      font-family: inherit;
-      font-size: 14px;
-    }
-    button {
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .btn-primary {
-      background: #2563eb;
-      color: white;
-      border: none;
-    }
-    .btn-primary:hover { background: #1e4ed8; }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
 
-    .resident-list {
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-    }
-    .resident-item {
-      padding: 6px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
-    }
+  .tab:hover, .tab.active {
+    background-color: #0078d7;
+  }
 
-    .alert {
-      padding: 10px 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .alert-success {
-      background: #d1fae5;
-      color: #065f46;
-    }
-    .alert-error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
+  .content {
+    display: none;
+    padding: 20px;
+  }
 
-    .flex {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-  </style>
+  .content.active {
+    display: block;
+  }
+
+  input, textarea, button {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 10px auto;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  button {
+    background-color: #0078d7;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background-color: #005fa3;
+  }
+
+  table {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: center;
+  }
+
+  th {
+    background-color: #0078d7;
+    color: white;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f8ff;
+  }
+</style>
 </head>
-
 <body>
-  <div class="container">
-    <header>
-      <h1><i class="ri-message-3-fill" style="color:#2563eb"></i>Barangay Update Notifier</h1>
-      <p>Manage residents and send community announcements easily.</p>
-    </header>
 
-    <div class="tabs">
-      <div class="tab active" data-tab="residents">
-        <i class="ri-user-3-fill"></i> Residents
-      </div>
-      <div class="tab" data-tab="messages">
-        <i class="ri-megaphone-fill"></i> Send Message
-      </div>
-    </div>
+<header>Barangay Resident Management System</header>
 
-    <div id="alert-area"></div>
+<div class="tabs">
+  <div class="tab active" data-tab="residents">👥 Residents</div>
+  <div class="tab" data-tab="messages">✉️ Send Message</div>
+</div>
 
-    <!-- Tab 1: Residents -->
-    <div id="tab-residents" class="tab-content active">
-      <h2><i class="ri-user-add-fill" style="color:#2563eb"></i> Add New Resident</h2>
-      <form id="addResidentForm">
-        <input type="text" id="residentName" placeholder="Full Name" required />
-        <input type="text" id="residentMobile" placeholder="Mobile Number" required />
-        <select id="residentPurok" required>
-          <option>Purok 1</option>
-          <option>Purok 2</option>
-          <option>Purok 3</option>
-          <option>Purok 4</option>
-          <option>Other</option>
-        </select>
-        <button type="submit" class="btn-primary">Add Resident</button>
-      </form>
+<!-- Residents Tab -->
+<div id="residents" class="content active">
+  <h2>Add New Resident</h2>
+  <input type="text" id="residentName" placeholder="Full Name">
+  <input type="text" id="residentAddress" placeholder="Address">
+  <input type="text" id="residentContact" placeholder="Contact Number">
+  <button id="addResident">Add Resident</button>
 
-      <h3>Resident List</h3>
-      <div class="resident-list" id="residentList"></div>
-    </div>
+  <h2>Resident List</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Full Name</th>
+        <th>Address</th>
+        <th>Contact</th>
+      </tr>
+    </thead>
+    <tbody id="residentTable">
+      <!-- Sample residents -->
+      <tr><td>1</td><td>Juan Dela Cruz</td><td>Purok 1</td><td>09123456789</td></tr>
+      <tr><td>2</td><td>Maria Santos</td><td>Purok 2</td><td>09987654321</td></tr>
+    </tbody>
+  </table>
+</div>
 
-    <!-- Tab 2: Message -->
-    <div id="tab-messages" class="tab-content">
-      <h2><i class="ri-megaphone-fill" style="color:#2563eb"></i> Send Message</h2>
-
-      <label for="targetGroup">Target Residents:</label>
-      <select id="targetGroup">
-        <option>All Residents</option>
-        <option>Purok 1</option>
-        <option>Purok 2</option>
-        <option>Purok 3</option>
-        <option>Purok 4</option>
-        <option>Other</option>
-      </select>
-
-      <div class="flex">
-        <small>Target count: <span id="targetCount">0</span></small>
-        <small><span id="charCount">0</span>/160 chars</small>
-      </div>
-
-      <textarea id="messageBox" rows="4" maxlength="160" placeholder="Enter your announcement here..."></textarea>
-
-      <button id="sendBtn" class="btn-primary">Send Message</button>
-    </div>
-  </div>
-
-  <script>
-    $(function() {
-      // ✅ Preloaded Sample Residents
-      let residents = [
-        { name: "Juan Dela Cruz", mobile: "09171234567", purok: "Purok 1" },
-        { name: "Maria Santos", mobile: "09181234567", purok: "Purok 2" },
-        { name: "Jose Rizal", mobile: "09192223333", purok: "Purok 3" },
-        { name: "Ana Mendoza", mobile: "09195556666", purok: "Purok 4" },
-        { name: "Pedro Bautista", mobile: "09223334444", purok: "Purok 1" },
-        { name: "Luz Navarro", mobile: "09334445555", purok: "Other" },
-      ];
-
-      // 🟦 Tabs
-      $(".tab").on("click", function() {
-        $(".tab").removeClass("active");
-        $(this).addClass("active");
-        $(".tab-content").removeClass("active");
-        $("#tab-" + $(this).data("tab")).addClass("active");
-      });
-
-      function updateResidentList() {
-        const list = $("#residentList");
-        list.empty();
-        residents.forEach((r, i) => {
-          list.append(`<div class='resident-item'>${i+1}. ${r.name} - ${r.mobile} (${r.purok})</div>`);
-        });
-        updateTargetCount();
-      }
-
-      function updateTargetCount() {
-        const target = $("#targetGroup").val();
-        const filtered = target === "All Residents"
-          ? residents
-          : residents.filter(r => r.purok === target);
-        $("#targetCount").text(filtered.length);
-      }
-
-      $("#addResidentForm").on("submit", function(e) {
-        e.preventDefault();
-        const name = $("#residentName").val().trim();
-        const mobile = $("#residentMobile").val().trim();
-        const purok = $("#residentPurok").val();
-        if(!name || !mobile) return;
-        residents.push({ name, mobile, purok });
-        $("#residentName").val("");
-        $("#residentMobile").val("");
-        updateResidentList();
-        showAlert("Resident added successfully!", true);
-      });
-
-      $("#targetGroup").on("change", updateTargetCount);
-      $("#messageBox").on("input", function() {
-        $("#charCount").text($(this).val().length);
-      });
-
-      function showAlert(msg, success = true) {
-        $("#alert-area").html(`
-          <div class="alert ${success ? 'alert-success':'alert-error'}">
-            <i class="ri-${success ? 'checkbox-circle-fill':'close-circle-fill'}"></i> ${msg}
-          </div>
-        `);
-        setTimeout(() => $("#alert-area").empty(), 4000);
-      }
-
-      $("#sendBtn").on("click", function() {
-        const target = $("#targetGroup").val();
-        const msg = $("#messageBox").val().trim();
-        if(msg.length < 10) return showAlert("Message too short.", false);
-        const filtered = target === "All Residents"
-          ? residents
-          : residents.filter(r => r.purok === target);
-        showAlert(`Message sent to ${filtered.length} residents in ${target}.`);
-        $("#messageBox").val("");
-        $("#charCount").text(0);
-      });
-
-      // Initialize
-      updateResidentList();
-    });
-  </script>
-</body>
-</html>
+<!-- Send Message Tab -->
+<div id="messages" class="content">
+  <h2>Send Message</h2>
+  <textarea id="messageText" rows="5" placeholder="Type your message..."></textarea>
+  <button id="sendMessage">Send Message</button>
+  <p id="status" style="text-align:center; font-weight:bold; color:#0078d7
